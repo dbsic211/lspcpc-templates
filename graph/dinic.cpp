@@ -27,18 +27,21 @@ struct maxflow_graph { //maxflow without mincost :(
     comp[v].push_back(us);
   }
   int dfs(int node, int flow) {
-    if(node == t) return flow;
+    if(node == t || flow <= 0) return max(0ll, flow);
+    int bruh = 0;
     for(int i=0; i<adj[node].size(); i++) {
       if(dist[adj[node][i].first] == dist[node] + 1 && adj[node][i].second > 0) {
         int dd = dfs(adj[node][i].first, min(flow, adj[node][i].second));
         if(dd > 0) {
+          flow -= dd;
+          bruh += dd;
           adj[node][i].second -= dd;
           adj[adj[node][i].first][comp[node][i]].second += dd;
-          return dd;
+          if(flow <= 0) return bruh;
         }
       }
     }
-    return 0;
+    return bruh;
   }
   int maxflow() {
     bool vis[n+1];
